@@ -10,6 +10,7 @@ public class GameGUI extends JFrame {
     private JLabel currentPokemonLabel;
     private JTextArea battleLog;
     private JButton[] attackButtons;
+    private JButton rollAttacksButton;
     private JPanel hpPanel;
 
     public GameGUI(Game game) {
@@ -46,11 +47,10 @@ public class GameGUI extends JFrame {
 
         add(centerPanel, BorderLayout.CENTER);
 
-        JPanel bottomPanel = new JPanel(new GridLayout(1, 4));
+        JPanel bottomPanel = new JPanel(new GridLayout(1, 5));
         attackButtons = new JButton[4];
-        Attack[] attacks = game.getCurrentPlayer().getCurrentPokemon().getAttacks();
-        for (int i = 0; i < attacks.length; i++) {
-            attackButtons[i] = new JButton(attacks[i].getName());
+        for (int i = 0; i < attackButtons.length; i++) {
+            attackButtons[i] = new JButton();
             final int attackIndex = i;
             attackButtons[i].addActionListener(new ActionListener() {
                 @Override
@@ -60,7 +60,23 @@ public class GameGUI extends JFrame {
             });
             bottomPanel.add(attackButtons[i]);
         }
+
+        rollAttacksButton = new JButton("Rolar Ataques");
+        rollAttacksButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!game.attacksRolled()) {
+                    game.rollAttacks();
+                    updateUI();
+                    rollAttacksButton.setEnabled(false);
+                }
+            }
+        });
+        bottomPanel.add(rollAttacksButton);
+
         add(bottomPanel, BorderLayout.SOUTH);
+
+        updateUI();
     }
 
     private void performAttack(int attackIndex) {
@@ -86,13 +102,14 @@ public class GameGUI extends JFrame {
         Player currentPlayer = game.getCurrentPlayer();
         currentPokemonLabel.setText("Current Pokemon: " + currentPlayer.getCurrentPokemon().getName());
         Attack[] attacks = currentPlayer.getCurrentPokemon().getAttacks();
-        for (int i = 0; i < attacks.length; i++) {
-            attackButtons[i].setText(attacks[i].getName());
-            attackButtons[i].setEnabled(true);
-        }
-        for (int i = attacks.length; i < attackButtons.length; i++) {
-            attackButtons[i].setText("");
-            attackButtons[i].setEnabled(false);
+        for (int i = 0; i < attackButtons.length; i++) {
+            if (i < attacks.length) {
+                attackButtons[i].setText(attacks[i].getName());
+                attackButtons[i].setEnabled(true);
+            } else {
+                attackButtons[i].setText("");
+                attackButtons[i].setEnabled(false);
+            }
         }
 
         // Update HP bars
@@ -101,30 +118,5 @@ public class GameGUI extends JFrame {
         hpPanel.add(game.getOpponentPlayer().getCurrentPokemon().getHpBar());
         hpPanel.revalidate();
         hpPanel.repaint();
-    }
-
-    public static void main(String[] args) {
-        Attack tackle = new Attack("Tackle", 10);
-        Attack thunderbolt = new Attack("Thunderbolt", 40);
-        Attack[] pikachuAttacks = {tackle, thunderbolt};
-
-        Attack ember = new Attack("Ember", 30);
-        Attack scratch = new Attack("Scratch", 20);
-        Attack[] charmanderAttacks = {ember, scratch};
-
-        Pokemon pikachu = new Pokemon("Pikachu", 100, pikachuAttacks);
-        Pokemon charmander = new Pokemon("Charmander", 100, charmanderAttacks);
-
-        Player player1 = new Player("Ash", new Pokemon[]{pikachu});
-        Player player2 = new Player("Gary", new Pokemon[]{charmander});
-
-        Game game = new Game(player1, player2);
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new GameGUI(game).setVisible(true);
-            }
-        });
-    }
+    }       
 }

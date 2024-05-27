@@ -1,59 +1,55 @@
 import javax.swing.JProgressBar;
 
 public class Pokemon {
-	 private String name;
-	    private int hp;
-	    private int maxHp;
-	    private Attack[] attacks;
-	    private JProgressBar hpBar;
+    private String name;
+    private int hp;
+    private Type type;
+    private Attack[] attacks;
+    private JProgressBar hpBar;
 
-	    public Pokemon(String name, int hp, Attack[] attacks) {
-	        this.name = name;
-	        this.hp = hp;
-	        this.maxHp = hp;
-	        this.attacks = attacks;
-	        this.hpBar = new JProgressBar(0, maxHp);
-	        this.hpBar.setValue(hp);
-	        this.hpBar.setStringPainted(true);
-	    }
+    public Pokemon(String name, int hp, Type type, Attack[] attacks) {
+        this.name = name;
+        this.hp = hp;
+        this.type = type;
+        this.attacks = attacks;
+        this.hpBar = new JProgressBar(0, hp);
+        this.hpBar.setValue(hp);
+    }
 
-	    public String getName() {
-	        return name;
-	    }
+    public String getName() {
+        return name;
+    }
 
-	    public int getHp() {
-	        return hp;
-	    }
+    public int getHp() {
+        return hp;
+    }
 
-	    public void takeDamage(int damage) {
-	        this.hp -= damage;
-	        if (this.hp < 0) {
-	            this.hp = 0;
-	        }
-	        updateHpBar();
-	    }
+    public Type getType() {
+        return type;
+    }
 
-	    public void heal(int amount) {
-	        this.hp += amount;
-	        if (this.hp > maxHp) {
-	            this.hp = maxHp;
-	        }
-	        updateHpBar();
-	    }
+    public Attack[] getAttacks() {
+        return attacks;
+    }
 
-	    public boolean isFainted() {
-	        return this.hp == 0;
-	    }
+    public void setAttacks(Attack[] attacks) {
+        this.attacks = attacks;
+    }
 
-	    public Attack[] getAttacks() {
-	        return attacks;
-	    }
+    public void takeDamage(int damage) {
+        hp -= damage;
+        if (hp < 0) {
+            hp = 0;
+        }
+        hpBar.setValue(hp);
+    }
 
-	    public JProgressBar getHpBar() {
-	        return hpBar;
-	    }
+    public boolean isFainted() {
+        return hp == 0;
+    }
 
-	    private void updateHpBar() {
-	        hpBar.setValue(hp);
-	    }
+    public JProgressBar getHpBar() {
+        return hpBar;
+    }
 }
+
