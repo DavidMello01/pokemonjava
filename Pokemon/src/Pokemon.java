@@ -3,6 +3,7 @@ import javax.swing.JProgressBar;
 public class Pokemon {
     private String name;
     private int hp;
+    private int maxHp;
     private Type type;
     private Attack[] attacks;
     private JProgressBar hpBar;
@@ -10,6 +11,7 @@ public class Pokemon {
     public Pokemon(String name, int hp, Type type, Attack[] attacks) {
         this.name = name;
         this.hp = hp;
+        this.maxHp = hp;
         this.type = type;
         this.attacks = attacks;
         this.hpBar = new JProgressBar(0, hp);
@@ -44,6 +46,14 @@ public class Pokemon {
         hpBar.setValue(hp);
     }
 
+    public void heal(int amount) {
+        hp += amount;
+        if (hp > maxHp) {
+            hp = maxHp;
+        }
+        hpBar.setValue(hp);
+    }
+
     public boolean isFainted() {
         return hp == 0;
     }
@@ -52,4 +62,3 @@ public class Pokemon {
         return hpBar;
     }
 }
-

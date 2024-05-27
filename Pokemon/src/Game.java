@@ -9,6 +9,7 @@ public class Game {
     private Player opponentPlayer;
     private boolean attacksRolled = false;
     private Map<Type, Attack[]> attackPool;
+    private List<GameObserver> observers = new ArrayList<>();
 
     public Game(Player player1, Player player2) {
         this.currentPlayer = player1;
@@ -18,13 +19,12 @@ public class Game {
 
     private void initializeAttackPool() {
         attackPool = new HashMap<>();
-//tirar os q nao sao do tipo, o pokemon ja nasce c uns atk pre-setado
+
         attackPool.put(Type.ELECTRIC, new Attack[]{
             new Attack("Tackle", 10, Type.ELECTRIC),
             new Attack("Thunderbolt", 40, Type.ELECTRIC),
             new Attack("Thunder", 60, Type.ELECTRIC),
-            new Attack("Quick Attack", 20, Type.ELECTRIC),
-            new Attack("Thunder Fang", 30, Type.ELECTRIC)
+            new Attack("Quick Attack", 20, Type.ELECTRIC)
         });
 
         attackPool.put(Type.FIRE, new Attack[]{
@@ -61,6 +61,7 @@ public class Game {
         Player temp = currentPlayer;
         currentPlayer = opponentPlayer;
         opponentPlayer = temp;
+        notifyTurnSwitch();
     }
 
     public boolean attacksRolled() {
@@ -80,5 +81,73 @@ public class Game {
         Collections.shuffle(availableAttacks);
         Attack[] newAttacks = availableAttacks.subList(0, 4).toArray(new Attack[0]);
         pokemon.setAttacks(newAttacks);
+    }
+
+    public void addObserver(GameObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(GameObserver observer) {
+        observers.remove(observer);
+    }
+
+    private void notifyPokemonFainted(Pokemon pokemon) {
+        for (GameObserver observer : observers) {
+            observer.onPokemonFainted(pokemon);
+        }
+    }
+
+    private void notifyGameOver(Player winner) {
+        for (GameObserver observer : observers) {
+            observer.onGameOver(winner);
+        }
+    }
+
+    private void notifyTurnSwitch() {
+        for (GameObserver observer : observers) {
+            observer.onTurnSwitch(currentPlayer, opponentPlayer);
+        }
+    }
+
+    public void performPlayerAttack(int attackIndex) {
+        Player currentPlayer = getCurrentPlayer();
+        Player opponentPlayer = getOpponentPlayer();
+        Attack attack = currentPlayer.getCurrentPokemon().getAttacks()[attackIndex];
+        opponentPlayer.getCurrentPokemon().takeDamage(attack.getPower());
+        notifyTurnSwitch();
+
+        if (opponentPlayer.getCurrentPokemon().isFainted()) {
+            notifyPokemonFainted(opponentPlayer.getCurrentPokemon());
+            if (!opponentPlayer.hasAvailablePokemon()) {
+                notifyGameOver(currentPlayer);
+            }
+        } else {
+            switchTurn();
+        }
+    }
+
+    public void performOpponentAttack(int attackIndex) {
+        Player opponentPlayer = getOpponentPlayer();
+        Player currentPlayer = getCurrentPlayer();
+        Attack attack = opponentPlayer.getCurrentPokemon().getAttacks()[attackIndex];
+        currentPlayer.getCurrentPokemon().takeDamage(attack.getPower());
+        notifyTurnSwitch();
+
+        if (currentPlayer.getCurrentPokemon().isFainted()) {
+            notifyPokemonFainted(currentPlayer.getCurrentPokemon());
+            if (!currentPlayer.hasAvailablePokemon()) {
+                notifyGameOver(opponentPlayer);
+            }
+        } else {
+            switchTurn();
+        }
+    }
+
+    public void performOpponentHeal() {
+        Player opponentPlayer = getOpponentPlayer();
+        Pokemon currentPokemon = opponentPlayer.getCurrentPokemon();
+        currentPokemon.heal(20); // Curar 20 pontos de vida
+        notifyTurnSwitch();
+        switchTurn();
     }
 }
