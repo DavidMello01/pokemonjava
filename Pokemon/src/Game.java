@@ -5,16 +5,28 @@ import java.util.List;
 import java.util.Map;
 
 public class Game {
+    // Instância única da classe
+    private static Game instance;
+
     private Player currentPlayer;
     private Player opponentPlayer;
     private boolean attacksRolled = false;
     private Map<Type, Attack[]> attackPool;
     private List<GameObserver> observers = new ArrayList<>();
 
-    public Game(Player player1, Player player2) {
+    // Construtor privado para evitar instâncias externas
+    private Game(Player player1, Player player2) {
         this.currentPlayer = player1;
         this.opponentPlayer = player2;
         initializeAttackPool();
+    }
+
+    // Método estático para obter a única instância da classe
+    public static synchronized Game getInstance(Player player1, Player player2) {
+        if (instance == null) {
+            instance = new Game(player1, player2);
+        }
+        return instance;
     }
 
     private void initializeAttackPool() {

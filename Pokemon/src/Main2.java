@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+//TEM Q VER O JOGO, O DANO TA ERRADO EU USO SKILL ETOMO O DANO E OS BIXO VAI SE CURANDO DO NADA SEM USAR POT
 public class Main2 {
     private static Pokemon pikachu, charmander, squirtle, sandshrew;
 
@@ -119,7 +119,7 @@ public class Main2 {
             Player player1 = new Player(playerName, new Pokemon[]{playerPokemon});
             Player player2 = new Player("Gary", new Pokemon[]{opponentPokemon});
 
-            Game game = new Game(player1, player2);
+            Game game = Game.getInstance(player1, player2); // Singleton instantiation
             new GameGUI(game, playerName).setVisible(true);
             dispose();
         }
