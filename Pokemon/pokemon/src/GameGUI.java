@@ -147,11 +147,17 @@ public class GameGUI extends JFrame implements GameObserver {
     @Override
     public void onTurnSwitch(Player currentPlayer, Player opponentPlayer) {
         battleLog.append(currentPlayer.getName() + " está atacando!\n");
-        updateUI();
+    
         if (currentPlayer == game.getOpponentPlayer()) {
+            animationPanel.setState(new AttackingState());
             performRandomAction();
+            updateUI();
+            
+            battleLog.append("Agora é a vez de " + opponentPlayer.getName() + "!\n");
+            game.switchTurn();
         }
-        animationPanel.setState(new AttackingState()); // Muda o estado para Atacando
+        
+          // Assegura que os jogadores são alternados após cada turno
     }
 
     private void performRandomAction() {
@@ -162,6 +168,7 @@ public class GameGUI extends JFrame implements GameObserver {
             game.performOpponentAttack(attackIndex);
         } else {
             game.performOpponentHeal();
+            battleLog.append(opponentPlayer.getName() + " usou uma poção! ");
         }
         updateUI(); // Atualiza a UI após a ação do oponente
     }

@@ -65,12 +65,18 @@ public class Game {
         return opponentPlayer;
     }
 
-    public void switchTurn() {
-        Player temp = currentPlayer;
-        currentPlayer = opponentPlayer;
-        opponentPlayer = temp;
-        notifyTurnSwitch();
+     // Método para trocar os turnos entre os jogadores
+     public void switchTurn() {
+        Player temp = this.currentPlayer;
+        this.currentPlayer = this.opponentPlayer;
+        this.opponentPlayer = temp;
+        notifyObservers("Turn switched: Now it's " + currentPlayer.getName() + "'s turn.");
     }
+
+    private void notifyObservers(String message) {
+        System.out.println(message); // Simulando notificação para observadores
+    }
+
 
     public boolean attacksRolled() {
         return attacksRolled;

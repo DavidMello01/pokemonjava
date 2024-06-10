@@ -11,6 +11,8 @@ class ReceivingStatew implements State {
                         panel.setDefenderX(panel.getDefenderX() + 5);
                         panel.repaint();
                         Thread.sleep(50);
+                    }
+                    for (int i = 0; i < 5; i++) {
                         panel.setDefenderX(panel.getDefenderX() - 5);
                         panel.repaint();
                         Thread.sleep(50);
